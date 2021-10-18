@@ -8,44 +8,70 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 10
 
 Resources:
-#  EventBridgeLayer:
-#    Type: AWS::Serverless::LayerVersion
-#    Properties:
-#      ContentUri: event_bridge_layer
-#      CompatibleRuntimes:
-#        - python3.8
-#    Metadata:
-#      BuildMethod: python3.8              # Required to have AWS SAM build this layer
-    EC2ChangeNameFunction:
-      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  EventBridgeLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: event_bridge_layer
+      CompatibleRuntimes:
+        - python3.8
+    Metadata:
+      BuildMethod: python3.8              # Required to have AWS SAM build this layer
+  EC2ChangeNameFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ec2_change_name/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Layers:
+        - Ref: EventBridgeLayer
+      Policies:
+          - AWSLambdaExecute
+          - AmazonRoute53AutoNamingFullAccess
+          - AmazonRoute53ReadOnlyAccess
+          - AmazonEC2ReadOnlyAccess
+    CWEvent:
+      Type: EventBridgeRule
       Properties:
-        CodeUri: ec2_change_name/
-        Handler: app.lambda_handler
-        Runtime: python3.8
-        Layers:
-#          - Ref: EventBridgeLayer
-    EC2StartAndShutdown:
-      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Pattern:
+          source:
+            - aws.tag
+  EC2StartAndShutdownFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ec2_start_and_shutdown/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Layers:
+        - Ref: EventBridgeLayer
+      Policies:
+        - AWSLambdaExecute
+        - AmazonRoute53AutoNamingFullAccess
+        - AmazonRoute53ReadOnlyAccess
+        - AmazonEC2ReadOnlyAccess
+    CWEvent:
+      Type: EventBridgeRule
       Properties:
-        CodeUri: ec2_start_and_shutdown/
-        Handler: app.lambda_handler
-        Runtime: python3.8
-        Layers:
-#          - Ref: EventBridgeLayer
-
+        Pattern:
+          detail:
+            state:
+              - terminated
+              - running
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  EC2NameRegisterFunction:
+  EC2ChangeNameFunction:
     Description: "EC2 Name Register Lambda Function ARN"
-    Value: !GetAtt EC2NameRegisterFunction.Arn
+    Value: !GetAtt EC2ChangeNameFunction.Arn
   EC2StartAndShutdownFunction:
     Description: "EC2 Start And Shutdown Lambda Function ARN"
     Value: !GetAtt EC2StartAndShutdownFunction.Arn
-  EC2NameRegisterFunctionIamRole:
+  EC2ChangeNameFunctionIamRole:
     Description: "Implicit IAM Role created for EC2 Name Register function"
-    Value: !GetAtt EC2NameRegisterFunctionIamRole.Arn
+    Value: !GetAtt EC2ChangeNameFunctionRole.Arn
+  EC2StartAndShutdownFunctionIamRole:
+    Description: "Implicit IAM Role created for EC2 Name Register function"
+    Value: !GetAtt EC2StartAndShutdownFunctionRole.Arn
