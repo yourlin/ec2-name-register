@@ -18,7 +18,7 @@ class EC2RegisterLayer:
     def merge_config(custom_config):
         return {**DEFAULT_CONFIG, **custom_config}
 
-    async def get_instance_info(self, instance_id):
+    def get_instance_info(self, instance_id):
         instance = self.ec2.describe_instances(
             InstanceIds=[instance_id]
         )
@@ -30,7 +30,7 @@ class EC2RegisterLayer:
 
         return name, private_ip
 
-    async def get_instance_private_ip(self, instance_id):
+    def get_instance_private_ip(self, instance_id):
         instance = self.ec2.describe_instances(
             InstanceIds=[instance_id]
         )
@@ -38,7 +38,7 @@ class EC2RegisterLayer:
 
         return private_ip
 
-    async def add_a_record(self, new_name, private_ip):
+    def add_a_record(self, new_name, private_ip):
         begin_time = time.time()
         # 如果有自定义dns_name
         if len(new_name) == 0:
@@ -49,7 +49,7 @@ class EC2RegisterLayer:
             host_zone_name = host_zone_info['HostedZone']['Name'][:-1]
             new_full_custom_dns_name = '%s.%s' % (new_name, host_zone_name)
 
-            await self.delete_dns_record(private_ip)
+            self.delete_dns_record(private_ip)
             # 注册内网A记录
 
             response = self.route53.change_resource_record_sets(
@@ -74,7 +74,7 @@ class EC2RegisterLayer:
         except Exception as e:
             print(e)
 
-    async def add_ptr_record(self, new_name, private_ip):
+    def add_ptr_record(self, new_name, private_ip):
         begin_time = time.time()
         # 如果有自定义dns_name
         if len(new_name) == 0:
@@ -85,7 +85,7 @@ class EC2RegisterLayer:
             host_zone_name = host_zone_info['HostedZone']['Name'][:-1]
             new_full_custom_dns_name = '%s.%s' % (new_name, host_zone_name)
 
-            await self.delete_ptr_record(private_ip)
+            self.delete_ptr_record(private_ip)
 
             # 添加反向PTR记录
             ptr_zone_info = self.route53.get_hosted_zone(
@@ -119,7 +119,7 @@ class EC2RegisterLayer:
         except Exception as e:
             print(e)
 
-    async def delete_dns_record(self, private_ip):
+    def delete_dns_record(self, private_ip):
         begin_time = time.time()
         try:
             # 查找匹配的记录
@@ -152,7 +152,7 @@ class EC2RegisterLayer:
         except Exception as e:
             print(e)
 
-    async def delete_ptr_record(self, private_ip):
+    def delete_ptr_record(self, private_ip):
         begin_time = time.time()
         ip_parts = private_ip.split('.')
         ip_parts.reverse()

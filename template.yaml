@@ -32,12 +32,13 @@ Resources:
           - AmazonRoute53AutoNamingFullAccess
           - AmazonRoute53ReadOnlyAccess
           - AmazonEC2ReadOnlyAccess
-    CWEvent:
-      Type: EventBridgeRule
-      Properties:
-        Pattern:
-          source:
-            - aws.tag
+      Events:
+        CWEvent:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source:
+                - aws.tag
   EC2StartAndShutdownFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -51,14 +52,15 @@ Resources:
         - AmazonRoute53AutoNamingFullAccess
         - AmazonRoute53ReadOnlyAccess
         - AmazonEC2ReadOnlyAccess
-    CWEvent:
-      Type: EventBridgeRule
-      Properties:
-        Pattern:
-          detail:
-            state:
-              - terminated
-              - running
+      Events:
+        CWEvent:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              detail:
+                state:
+                  - terminated
+                  - running
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -73,5 +75,11 @@ Outputs:
     Description: "Implicit IAM Role created for EC2 Name Register function"
     Value: !GetAtt EC2ChangeNameFunctionRole.Arn
   EC2StartAndShutdownFunctionIamRole:
-    Description: "Implicit IAM Role created for EC2 Name Register function"
+    Description: "Implicit IAM Role created for EC2 Name Start and Stop function"
     Value: !GetAtt EC2StartAndShutdownFunctionRole.Arn
+  EC2StartAndShutdownFunctionCWEvent:
+    Description: "EC2 Start and shutdown Event Rule"
+    Value: !GetAtt EC2StartAndShutdownFunctionCWEvent.Arn
+  EC2ChangeNameFunctionCWEvent:
+    Description: "EC2 Change Name Event Rule"
+    Value: !GetAtt EC2ChangeNameFunctionCWEvent.Arn

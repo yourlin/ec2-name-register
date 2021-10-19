@@ -1,7 +1,4 @@
-import asyncio
-from event_bridge_layer.app import EC2RegisterLayer
-
-loop = asyncio.get_event_loop()
+from ec2_name_register_layer import EC2RegisterLayer
 
 CONFIG = {
     'HOSTED_ZONE_ID': 'Z0348615WGFD7IWPZOCV',
@@ -11,22 +8,16 @@ CONFIG = {
 layer = EC2RegisterLayer(CONFIG)
 
 
-async def add_node(instance_id):
-    instance_name, private_ip = await layer.get_instance_info(instance_id)
-    tasks = [
-        layer.add_a_record(instance_name, private_ip),
-        layer.add_ptr_record(instance_name, private_ip)
-    ]
-    loop.run_until_complete(asyncio.wait(tasks))
+def add_node(instance_id):
+    instance_name, private_ip = layer.get_instance_info(instance_id)
+    layer.add_a_record(instance_name, private_ip)
+    layer.add_ptr_record(instance_name, private_ip)
 
 
-async def del_node(instance_id):
-    private_ip = await layer.get_instance_private_ip(instance_id)
-    tasks = [
-        layer.delete_dns_record(private_ip),
-        layer.delete_ptr_record(private_ip)
-    ]
-    loop.run_until_complete(asyncio.wait(tasks))
+def del_node(instance_id):
+    private_ip = layer.get_instance_private_ip(instance_id)
+    layer.delete_dns_record(private_ip)
+    layer.delete_ptr_record(private_ip)
 
 
 def lambda_handler(event, context):
