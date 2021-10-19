@@ -1,12 +1,6 @@
 from ec2_name_register_layer import EC2RegisterLayer
 
-CONFIG = {
-    'HOSTED_ZONE_ID': 'Z0348615WGFD7IWPZOCV',
-    'PTR_ZONE_ID': 'Z05233005YXC6V4H0HJK',
-    'PTR_RESERVED_PARTS': 2
-}
-
-layer = EC2RegisterLayer(CONFIG)
+layer = EC2RegisterLayer()
 
 
 def add_node(instance_id, new_name):

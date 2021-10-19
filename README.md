@@ -2,7 +2,8 @@
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
-- hello_world - Code for the application's Lambda function.
+- ec2_change_name - Code for the application's Lambda function.
+- ec2_change_name - Code for the application's Lambda function.
 - events - Invocation events that you can use to invoke the function.
 - tests - Unit tests for the application code. 
 - template.yaml - A template that defines the application's AWS resources.
@@ -32,12 +33,12 @@ To use the SAM CLI, you need the following tools.
 
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * [Python 3 installed](https://www.python.org/downloads/)
-* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
+* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community) (Optional)
 
 To build and deploy your application for the first time, run the following in your shell:
 
 ```bash
-sam build --use-container
+sam build
 sam deploy --guided
 ```
 
@@ -66,25 +67,10 @@ Test a single function by invoking it directly with a test event. An event is a 
 Run functions locally and invoke them with the `sam local invoke` command.
 
 ```bash
-ec2-name-register$ sam local invoke HelloWorldFunction --event events/event.json
-```
-
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
-
-```bash
-ec2-name-register$ sam local start-api
-ec2-name-register$ curl http://localhost:3000/
-```
-
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
-
-```yaml
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
+ec2-name-register$ sam local invoke EC2StartAndShutdownFunction --event events/running-event.json
+ec2-name-register$ sam local invoke EC2StartAndShutdownFunction --event events/shutting-down-event.json
+ec2-name-register$ sam local invoke EC2ChangeNameFunction --event events/change_name_to_c.json
+ec2-name-register$ sam local invoke EC2ChangeNameFunction --event events/change_name_to_d.json
 ```
 
 ## Add a resource to your application
@@ -97,7 +83,8 @@ To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs`
 `NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
 
 ```bash
-ec2-name-register$ sam logs -n HelloWorldFunction --stack-name ec2-name-register --tail
+ec2-name-register$ sam logs -n EC2StartAndShutdownFunction --stack-name ec2-name-register --tail
+ec2-name-register$ sam logs -n EC2ChangeNameFunction --stack-name ec2-name-register --tail
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).

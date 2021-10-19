@@ -2,14 +2,14 @@ import boto3
 import time
 
 DEFAULT_CONFIG = {
-    'HOSTED_ZONE_ID': '',
-    'PTR_ZONE_ID': '',
-    'PTR_RESERVED_PARTS': 2,
+    'HOSTED_ZONE_ID': 'Z0348615WGFD7IWPZOCV',
+    'PTR_ZONE_ID': 'Z05233005YXC6V4H0HJK',
+    'PTR_RESERVED_PARTS': 2
 }
 
 
 class EC2RegisterLayer:
-    def __init__(self, custom_config):
+    def __init__(self, custom_config=None):
         self.route53 = boto3.client('route53')
         self.ec2 = boto3.client('ec2')
         self.config = self.merge_config(custom_config)

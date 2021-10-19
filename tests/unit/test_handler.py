@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from ec2_change_name import app
@@ -71,12 +69,6 @@ def name_change_to_e():
 
 def test_lambda_handler(name_change_to_d, mocker):
     ret = app.lambda_handler(name_change_to_d, "")
-    # data = json.loads(ret["body"])
-
-    # assert ret["statusCode"] == 200
-    # assert "message" in ret["body"]
-    # assert data["message"] == "hello world"
-    # assert "location" in data.dict_keys()
 
 
 def test_lambda_handler2(name_change_to_e, mocker):
