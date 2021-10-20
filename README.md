@@ -1,5 +1,9 @@
 # ec2-name-register
 
+This project could register name of EC2 instance to Route 53 Hosted Zone automatically. 
+- A record for resolve custom DNS name to IP
+- PTR record for `dig -x <ec2_ip>` to custom DNS Name.
+
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
 - ec2_change_name - Code for the application's Lambda function.
