@@ -1,4 +1,4 @@
-from ec2_name_register_layer import EC2RegisterLayer
+from event_bridge_layer.ec2_name_register_layer import EC2RegisterLayer
 
 layer = EC2RegisterLayer()
 

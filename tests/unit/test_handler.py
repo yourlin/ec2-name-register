@@ -67,9 +67,9 @@ def name_change_to_e():
     }
 
 
-def test_lambda_handler(name_change_to_d, mocker):
+def test_lambda_handler(name_change_to_d):
     ret = app.lambda_handler(name_change_to_d, "")
 
 
-def test_lambda_handler2(name_change_to_e, mocker):
+def test_lambda_handler2(name_change_to_e):
     ret = app.lambda_handler(name_change_to_e, "")
